@@ -45,8 +45,8 @@ CASE iState OF
 			iState:=20;
 		END_IF
 	20://Movement
-		KR:=(rAcceleration*DINT_TO_REAL(diCycleTime))/100000;
-		KF:=(rDeceleration*DINT_TO_REAL(diCycleTime))/100000;
+		KR:=(rAcceleration*DINT_TO_REAL(diCycleTime))/1000000;
+		KF:=(rDeceleration*DINT_TO_REAL(diCycleTime))/1000000;
 		IF DINT_TO_REAL(diTargetVelocity) > rTargetVelocity THEN//Acc
 			IF DINT_TO_REAL(diTargetVelocity) - rTargetVelocity <= KR THEN
 				rTargetVelocity:=DINT_TO_REAL(diTargetVelocity);
