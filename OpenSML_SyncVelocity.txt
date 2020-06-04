@@ -1,0 +1,82 @@
+(* https://github.com/feecat/opensml *)
+FUNCTION_BLOCK OpenSML_SyncVelocity
+VAR_IN_OUT
+	Axis:OpenSML_Axis;
+END_VAR
+VAR_INPUT
+	xEnable:BOOL;
+	diTargetVelocity:DINT;//vel
+	rAcceleration:REAL;//vel/s
+	rDeceleration:REAL;//vel/s
+	diCycleTime:DINT;//1000=1ms
+END_VAR
+VAR_OUTPUT
+	xError: BOOL;
+END_VAR
+VAR
+	iState:INT;
+	KR:REAL;
+	KF:REAL;
+	rTargetVelocity:REAL;
+	tonTimeout:TON;
+	tTimeOut:TIME:=T#200MS;
+END_VAR
+
+
+
+(*
+Cyclic synchronous velocity mode (=9)
+If in movement, Please DO NOT Drop down xEnable.
+*)
+CASE iState OF
+	0://start
+		xError:=FALSE;
+		IF xEnable AND Axis.StatusWord.1 AND NOT Axis.StatusWord.2 AND NOT Axis.StatusWord.3 THEN
+			iState:=10;//go go
+		ELSIF xEnable AND Axis.StatusWord.2 THEN
+			Axis.ControlWord.3:=FALSE;//drop down operation enabled
+		ELSIF xEnable THEN
+			iState:=999;//error
+		END_IF
+	10://Set Mode
+		Axis.Modes_of_operation:=9;//Cyclic synchronous velocity mode
+		Axis.ControlWord.3:=Axis.Modes_of_operation_display=9;//Success change mode, enable operation
+		IF Axis.StatusWord.2 THEN//Operation Enabled
+			iState:=20;
+		END_IF
+	20://Movement
+		KR:=(rAcceleration*DINT_TO_REAL(diCycleTime))/100000;
+		KF:=(rDeceleration*DINT_TO_REAL(diCycleTime))/100000;
+		IF DINT_TO_REAL(diTargetVelocity) > rTargetVelocity THEN//Acc
+			IF DINT_TO_REAL(diTargetVelocity) - rTargetVelocity <= KR THEN
+				rTargetVelocity:=DINT_TO_REAL(diTargetVelocity);
+			ELSE
+				rTargetVelocity:=rTargetVelocity+KR;
+			END_IF
+		ELSIF DINT_TO_REAL(diTargetVelocity) < rTargetVelocity THEN//dec
+			IF rTargetVelocity - DINT_TO_REAL(diTargetVelocity) <= KF THEN
+				rTargetVelocity:=DINT_TO_REAL(diTargetVelocity);
+			ELSE
+				rTargetVelocity:=rTargetVelocity-KF;
+			END_IF
+		END_IF
+		Axis.Target_Velocity:=REAL_TO_DINT(rTargetVelocity);
+		IF Axis.StatusWord.13 OR Axis.StatusWord.3 THEN//Axis Error
+			iState:=999;
+		ELSIF NOT xEnable THEN
+			Axis.Target_Velocity:=0;
+			iState:=0;
+		END_IF
+	999://Error wait
+		Axis.Target_Position:=0;
+		tonTimeout(IN:=FALSE);
+		xError:=TRUE;
+		IF NOT xEnable THEN
+			iState:=0;
+		END_IF
+END_CASE
+
+
+
+
+
