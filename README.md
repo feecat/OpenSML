@@ -1,6 +1,11 @@
 # OpenSML
 
-Open Sources SoftMotion Light For CiA402 Servo Drivers
+Open Sources SoftMotion Light For CiA402 Servo Drivers  
+
+Tips:  
+[Here you can found .library file](https://github.com/feecat/OpenSML/issues/2#issuecomment-771620326) for codesys and beckhoff, you can just import and test it, Thanks elconfa.  
+There is suggest to read [keba servoone usermanual](https://www.lti-motion.com/fileadmin/lti-motion/downloads/03-Geraetedokumentationen/ServoOne/Option1-Kommunikation/SO_UserM_EtherCAT-CANopen_2020-04_EN.pdf) to get more information about cia402.  
+And if you have any questions please feel free to push your issues.  
 
 ## Why
 
