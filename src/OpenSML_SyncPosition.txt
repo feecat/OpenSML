@@ -78,7 +78,6 @@ CASE iState OF
 		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = StruckigLight.TrajectoryState.Error THEN//Axis Error
 			iState:=999;
 		ELSIF NOT xEnable THEN
-			Axis.Target_Velocity:=0;
 			iState:=0;
 		END_IF
 	999://Error wait
