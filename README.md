@@ -85,7 +85,7 @@ SyncVelocity_X(
 | Cyclic Synchronous Velocity Mode |:white_check_mark:|OpenSML_SyncVelocity|
 | Cyclic Synchronous Position Mode |:construction:|OpenSML_SyncPosition|
 
-## Velocity Ramp and Fake axis
+## Velocity Ramp
 
 Quadratic velocity ramp calculate is very, very, very difficulty. Its simple when calc a curve, but its complexable when break a move without speed jitter.  
 
@@ -93,4 +93,11 @@ I had create a 6th velocity ramp base g2 at [https://github.com/feecat/OpenSML/i
 
 [Struckig](https://github.com/stefanbesler/struckig) and [Ruckig](https://github.com/pantor/ruckig) is for multi dof robot calc, Ruckig calculates a trajectory to a target waypoint (with position, velocity, and acceleration) starting from any initial state limited by velocity, acceleration, and jerk constraints. It already finish mostily job in CSP moveabsolute. Also..it have a little bug, when i use Struckig, sometime it get non-zero acceleration when finished, it wll cause unexception move. I had remove some funcition, reduce program size and make it work with OpenSML. For now its still in test, If you found some bug please push your issues. Thanks.
 
+At this trace,  
+1. `POU.otg.CurrentPosition` from struckig.
+2. `POU.Axis1.fSetPosition` from SM3_Basic.
+3. `POU.csp.otg.CurrentPosition` from OpenSML_SyncPosition.
 
+They overlap perfectly.
+
+![](https://user-images.githubusercontent.com/29628990/244256140-3b22995f-f22a-484f-95d3-a63f8213bfdb.png)
