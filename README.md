@@ -84,4 +84,5 @@ SyncVelocity_X(
 |Stop|:white_check_mark:|OpenSML_Stop|
 |Jog|:construction:|-|
 |TouchProbe|:construction:|-|
-| Cyclic Sync Velocity Mode |:white_check_mark:|OpenSML_SyncVelocity|
+| Cyclic Synchronous Velocity Mode |:white_check_mark:|OpenSML_SyncVelocity|
+| Cyclic Synchronous Position Mode |:construction:|OpenSML_SyncPosition|

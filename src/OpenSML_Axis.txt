@@ -1,0 +1,19 @@
+TYPE OpenSML_Axis :
+STRUCT
+//Output
+	ControlWord:UINT;
+	Modes_of_operation:SINT;
+	Target_Position:DINT;
+	Profile_Velocity:UDINT;
+	Target_Velocity:DINT;
+	Target_torque:INT;
+//Input
+	StatusWord:UINT;
+	Modes_of_operation_display:SINT;
+	Torque_Actual_Value:INT;
+	Position_Actual_Value:DINT;
+	Velocity_Actual_Value:DINT;
+	Current_Actual_Value:INT;
+	Following_Error_Actual_Value:DINT;
+END_STRUCT
+END_TYPE
