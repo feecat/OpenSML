@@ -3,15 +3,13 @@
 Open Sources SoftMotion Light For CiA402 Servo Drivers  
 
 Tips:  
-[Here you can found .library file](https://github.com/feecat/OpenSML/issues/2#issuecomment-771620326) for codesys and beckhoff, you can just import and test it, Thanks elconfa.  
-There is suggest to read [keba servoone usermanual](https://www.lti-motion.com/fileadmin/lti-motion/downloads/03-Geraetedokumentationen/ServoOne/Option1-Kommunikation/SO_UserM_EtherCAT-CANopen_2020-04_EN.pdf) to get more information about cia402.  
+Library file for CODESYS and TwinCAT3, Quadratic velocity ramp calc we used [Struckig](https://github.com/stefanbesler/struckig) Library.  
+There is suggest to read [keba servoone usermanual](https://support.keba.com/cds/online/#doc/01-SOCANOPETHCAT-bh-en/01-SOCANOPETHCAT-bh-en) to get more information about cia402.  
 And if you have any questions please feel free to push your issues.  
 
 ## Why
 
-codesys is the best plc programming platform. With the Raspberry Pi, you can get an advanced plc programming environment at a very low price.
-
-However, the softmotion license was canceled in the latest version of codesys for raspberry pi. (> 3.5.14.40, which means Raspberry Pi 4 must pay to get a softmotion license)
+Codesys is the best PLC programming platform. With the Raspberry Pi, you can get an advanced plc programming environment at a very low price. However, the softmotion license was canceled in the latest version of codesys for raspberry pi. (> 3.5.14.40, which means Raspberry Pi 4 must pay to get a softmotion license)
 
 The motion control used by most customers is very simple and does not involve interpolation motion.
 
@@ -86,3 +84,13 @@ SyncVelocity_X(
 |TouchProbe|:construction:|-|
 | Cyclic Synchronous Velocity Mode |:white_check_mark:|OpenSML_SyncVelocity|
 | Cyclic Synchronous Position Mode |:construction:|OpenSML_SyncPosition|
+
+## Velocity Ramp and Fake axis
+
+Quadratic velocity ramp calculate is very, very, very difficulty. Its simple when calc a curve, but its complexable when break a move without speed jitter.  
+
+I had create a 6th velocity ramp base g2 at [https://github.com/feecat/OpenSML/issues/4#issuecomment-1146995447](https://github.com/feecat/OpenSML/issues/4#issuecomment-1146995447) , But it cannot break a move. This is unacceptable for most applications.  
+
+[Struckig](https://github.com/stefanbesler/struckig) and [Ruckig](https://github.com/pantor/ruckig) is for multi dof robot calc, Ruckig calculates a trajectory to a target waypoint (with position, velocity, and acceleration) starting from any initial state limited by velocity, acceleration, and jerk constraints. It already finish mostily job in CSP moveabsolute. Also..it have a little bug, when i use Struckig, sometime it get non-zero acceleration when finished, it wll cause unexception move. I had remove some funcition, reduce program size and make it work with OpenSML. For now its still in test, If you found some bug please push your issues. Thanks.
+
+
