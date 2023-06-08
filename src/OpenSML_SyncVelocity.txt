@@ -4,29 +4,46 @@ VAR_IN_OUT
 	Axis:OpenSML_Axis;
 END_VAR
 VAR_INPUT
-	xEnable:BOOL;
-	diTargetVelocity:DINT;//vel
-	rAcceleration:REAL;//vel/s
-	rDeceleration:REAL;//vel/s
-	diCycleTime:DINT;//1000=1ms
+	MaxVelocity :LREAL:=2000;
+	MaxAcceleration :LREAL:=200;
+	MaxJerk :LREAL:=200;
+	CycleTime:LREAL:=0.001;//0.001 = 1ms
+
+	TargetVelocity :LREAL;
+	xEnable: BOOL;
+	lrScale:LREAL:=1.0;
+	xSimulation: BOOL;
 END_VAR
 VAR_OUTPUT
 	xError: BOOL;
 END_VAR
 VAR
+	otg : Otg:= (
+		CycleTime := CycleTime,
+		MaxVelocity := MaxVelocity ,
+		MaxAcceleration := MaxAcceleration ,
+		MaxJerk := MaxJerk ,
+		CurrentPosition := 0.0 ,
+		CurrentVelocity := 0.0 ,
+		CurrentAcceleration := 0.0 ,
+		TargetPosition := 0.0 ,
+		TargetVelocity := 0.0 ,
+		TargetAcceleration := 0.0 
+	);
 	iState:INT;
-	KR:REAL;
-	KF:REAL;
-	rTargetVelocity:REAL;
-	tonTimeout:TON;
-	tTimeOut:TIME:=T#200MS;
+	
 END_VAR
-
 
 
 (*
 Cyclic synchronous velocity mode (=9)
+Set 6060(Op mode) and 60C2(Interpolation time period) at Startup Parameters.
+
+#####################################
+NEED StruckigLight Library for Quadratic Velocity Ramp Calculate.
+
 If in movement, Please DO NOT Drop down xEnable.
+#####################################
 *)
 CASE iState OF
 	0://start
@@ -35,6 +52,8 @@ CASE iState OF
 			iState:=10;//go go
 		ELSIF xEnable AND Axis.StatusWord.2 THEN
 			Axis.ControlWord.3:=FALSE;//drop down operation enabled
+		ELSIF xSimulation THEN
+			iState:=20;
 		ELSIF xEnable THEN
 			iState:=999;//error
 		END_IF
@@ -42,40 +61,33 @@ CASE iState OF
 		Axis.Modes_of_operation:=9;//Cyclic synchronous velocity mode
 		Axis.ControlWord.3:=Axis.Modes_of_operation_display=9;//Success change mode, enable operation
 		IF Axis.StatusWord.2 THEN//Operation Enabled
+			otg.CurrentPosition:=DINT_TO_LREAL(Axis.Position_Actual_Value) / lrScale;//Write actual position to otg
 			iState:=20;
 		END_IF
 	20://Movement
-		KR:=(rAcceleration*DINT_TO_REAL(diCycleTime))/1000000;
-		KF:=(rDeceleration*DINT_TO_REAL(diCycleTime))/1000000;
-		IF DINT_TO_REAL(diTargetVelocity) > rTargetVelocity THEN//Acc
-			IF DINT_TO_REAL(diTargetVelocity) - rTargetVelocity <= KR THEN
-				rTargetVelocity:=DINT_TO_REAL(diTargetVelocity);
-			ELSE
-				rTargetVelocity:=rTargetVelocity+KR;
-			END_IF
-		ELSIF DINT_TO_REAL(diTargetVelocity) < rTargetVelocity THEN//dec
-			IF rTargetVelocity - DINT_TO_REAL(diTargetVelocity) <= KF THEN
-				rTargetVelocity:=DINT_TO_REAL(diTargetVelocity);
-			ELSE
-				rTargetVelocity:=rTargetVelocity-KF;
-			END_IF
-		END_IF
-		Axis.Target_Velocity:=REAL_TO_DINT(rTargetVelocity);
-		IF Axis.StatusWord.13 OR Axis.StatusWord.3 THEN//Axis Error
+		otg(
+			ControlInterface:= ControlInterfaceType.Velocity , 
+			TargetPosition:= 0 , 
+			TargetVelocity:= TargetVelocity , 
+			TargetAcceleration:= 0 , 
+			MaxVelocity:= MaxVelocity , 
+			MaxAcceleration:= MaxAcceleration , 
+			MaxJerk:= MaxJerk);//accept new position and going on
+			
+		Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
+		
+		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = TrajectoryState.Error THEN//Axis Error
 			iState:=999;
 		ELSIF NOT xEnable THEN
-			Axis.Target_Velocity:=0;
 			iState:=0;
 		END_IF
 	999://Error wait
 		Axis.Target_Position:=0;
-		tonTimeout(IN:=FALSE);
 		xError:=TRUE;
 		IF NOT xEnable THEN
 			iState:=0;
 		END_IF
 END_CASE
-
 
 
 

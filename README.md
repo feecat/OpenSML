@@ -98,6 +98,6 @@ At this trace,
 2. `POU.Axis1.fSetPosition` from SM3_Basic.
 3. `POU.csp.otg.CurrentPosition` from OpenSML_SyncPosition.
 
-They overlap perfectly.
+They overlap perfectly, diff < 1e-10.
 
 ![](/img/1.png)  
