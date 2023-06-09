@@ -36,7 +36,10 @@ END_VAR
 
 
 (*
-Cyclic synchronous velocity mode (=9)
+Normally we use CSP(=8) as CSV(=9) cus mostly servo dont have TargetVelocity PDO by default.
+If you really want use CSV mode, Please connect OpenSML_SyncVelocity.otg.NewVelocity to TargetVelocity PDO after scale.
+
+Cyclic Synchronous Position Mode (=8)
 Set 6060(Op mode) and 60C2(Interpolation time period) at Startup Parameters.
 
 #####################################
@@ -58,7 +61,7 @@ CASE iState OF
 			iState:=999;//error
 		END_IF
 	10://Set Mode
-		Axis.Modes_of_operation:=9;//Cyclic synchronous velocity mode
+		Axis.Modes_of_operation:=8;//Cyclic Synchronous Position Mode
 		Axis.ControlWord.3:=Axis.Modes_of_operation_display=9;//Success change mode, enable operation
 		IF Axis.StatusWord.2 THEN//Operation Enabled
 			otg.CurrentPosition:=DINT_TO_LREAL(Axis.Position_Actual_Value) / lrScale;//Write actual position to otg
@@ -72,7 +75,7 @@ CASE iState OF
 			TargetAcceleration:= 0 , 
 			MaxVelocity:= MaxVelocity , 
 			MaxAcceleration:= MaxAcceleration , 
-			MaxJerk:= MaxJerk);//accept new position and going on
+			MaxJerk:= MaxJerk);//accept new velocity and going on
 			
 		Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
 		

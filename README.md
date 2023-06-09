@@ -2,8 +2,10 @@
 
 Open Sources SoftMotion Light For CiA402 Servo Drivers  
 
-Tips:  
-Library file for CODESYS and TwinCAT3, Quadratic velocity ramp calc we used [Struckig](https://github.com/stefanbesler/struckig) Library.  
+Tips:
+
+Library file should worked on CODESYS and TwinCAT3, Quadratic velocity ramp calc we used Struckig Library.
+
 There is suggest to read [keba servoone usermanual](https://support.keba.com/cds/online/#doc/01-SOCANOPETHCAT-bh-en/01-SOCANOPETHCAT-bh-en) to get more information about cia402.  
 And if you have any questions please feel free to push your issues.  
 
@@ -53,18 +55,21 @@ CASE iState OF
 END_CASE
 ```
 
-Example for Cyclic synchronous Velocity Mode:
+Example for Cyclic Synchronous Position Mode:
 
 ```
 Power_X(Axis:=Axis_X,xEnable:=Enable);
-SyncVelocity_X(
-	Axis:=Axis_X ,
-	xEnable:=EnableMove ,
-	diTargetVelocity:=diTargetVel ,
-	rAcceleration:=10000 ,
-	rDeceleration:=10000 ,
-	diCycleTime:=1000 ,
-	xError=>Error);
+SyncPosition_X(
+	Axis:=Axis_X , 
+	MaxVelocity:=2000 , 
+	MaxAcceleration:=20000 , 
+	MaxJerk:=200000 , 
+	CycleTime:=0.001 , 
+	TargetPosition:=rTarget , 
+	xEnable:=TRUE , 
+	lrScale:=1.0 , 
+	xSimulation:=TRUE,
+	xError=> ;
 ```
 
 
@@ -83,7 +88,7 @@ SyncVelocity_X(
 |Jog|:construction:|-|
 |TouchProbe|:construction:|-|
 | Cyclic Synchronous Velocity Mode |:white_check_mark:|OpenSML_SyncVelocity|
-| Cyclic Synchronous Position Mode |:construction:|OpenSML_SyncPosition|
+| Cyclic Synchronous Position Mode |:white_check_mark:|OpenSML_SyncPosition|
 
 ## Velocity Ramp
 
