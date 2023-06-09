@@ -81,7 +81,6 @@ CASE iState OF
 			iState:=0;
 		END_IF
 	999://Error wait
-		Axis.Target_Position:=0;
 		xError:=TRUE;
 		IF NOT xEnable THEN
 			iState:=0;
