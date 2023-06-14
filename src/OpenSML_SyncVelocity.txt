@@ -63,8 +63,8 @@ CASE iState OF
 	10://Set Mode
 		Axis.Modes_of_operation:=8;//Cyclic Synchronous Position Mode
 		Axis.ControlWord.3:=Axis.Modes_of_operation_display=9;//Success change mode, enable operation
+		otg.CurrentPosition:=DINT_TO_LREAL(Axis.Position_Actual_Value) / lrScale;//Write actual position to otg
 		IF Axis.StatusWord.2 THEN//Operation Enabled
-			otg.CurrentPosition:=DINT_TO_LREAL(Axis.Position_Actual_Value) / lrScale;//Write actual position to otg
 			iState:=20;
 		END_IF
 	20://Movement
