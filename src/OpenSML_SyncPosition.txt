@@ -49,10 +49,13 @@ If in movement, Please DO NOT Drop down xEnable.
 CASE iState OF
 	0://start
 		xError:=FALSE;
-		IF xEnable AND Axis.StatusWord.1 AND NOT Axis.StatusWord.2 AND NOT Axis.StatusWord.3 THEN
+		IF xEnable AND Axis.StatusWord.1 AND Axis.StatusWord.2 AND Axis.Modes_of_operation_display = 8 AND NOT Axis.StatusWord.3 THEN//ready
 			iState:=10;//go go
-		ELSIF xEnable AND Axis.StatusWord.2 THEN
-			Axis.ControlWord.3:=FALSE;//drop down operation enabled
+		ELSIF xEnable AND Axis.StatusWord.1 AND Axis.Modes_of_operation_display <> 8 THEN//need switch mode
+			Axis.ControlWord.3:=FALSE;//drop down operation enabled, motor could free move
+			iState:=10;
+		ELSIF xSimulation THEN
+			iState:=20;
 		ELSIF xEnable THEN
 			iState:=999;//error
 		END_IF
@@ -75,7 +78,7 @@ CASE iState OF
 			
 		Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
 		
-		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = StruckigLight.TrajectoryState.Error THEN//Axis Error
+		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = TrajectoryState.Error THEN//Axis Error
 			iState:=999;
 		ELSIF NOT xEnable THEN
 			iState:=0;
