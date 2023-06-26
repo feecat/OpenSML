@@ -63,6 +63,7 @@ CASE iState OF
 		ELSIF tonTimeout.Q THEN iState:=999;//error
 		END_IF
 	40://EnableOperation
+		Axis.Target_Position:=Axis.Position_Actual_Value;
 		Axis.ControlWord.3:=TRUE;
 		tonTimeout(IN:=TRUE,pt:=tTimeOut);
 		IF Axis.StatusWord.2 THEN
@@ -73,6 +74,7 @@ CASE iState OF
 	50://Success
 		xDone:=TRUE;
 		IF NOT xEnable THEN
+			Axis.ControlWord.3:=FALSE;
 			iState:=0;
 		END_IF
 		IF Axis.StatusWord.3 THEN
