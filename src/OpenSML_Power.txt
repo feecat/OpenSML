@@ -14,7 +14,7 @@ END_VAR
 VAR
 	iState:INT;
 	tonTimeout:TON;
-	tTimeOut:TIME:=T#200MS;
+	tTimeOut:TIME:=T#500MS;
 END_VAR
 
 
@@ -28,11 +28,11 @@ CASE iState OF
 	0://start
 		xDone:=FALSE;
 		xError:=FALSE;
+		Axis.ControlWord.0:=FALSE;//SwitchOn
+		Axis.ControlWord.1:=FALSE;//EnableVoltage
+		Axis.ControlWord.3:=FALSE;//EnableOperation
+		Axis.ControlWord.7:=FALSE;//FaultReset
 		IF xEnable THEN
-			Axis.ControlWord.0:=FALSE;//SwitchOn
-			Axis.ControlWord.1:=FALSE;//EnableVoltage
-			Axis.ControlWord.3:=FALSE;//EnableOperation
-			Axis.ControlWord.7:=FALSE;//FaultReset
 			IF Axis.StatusWord.3 THEN iState:=10;//If there have error, Reset first
 			ELSE iState:=20;//No error, go go
 			END_IF
