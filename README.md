@@ -2,8 +2,10 @@
 
 Open Sources SoftMotion Light For CiA402 Servo Drivers  
 
+![](/img/2.png)  
+
 Tips:  
-Library file should worked on CODESYS and TwinCAT3, Quadratic velocity ramp calc we used Struckig Library.
+Library file should worked on CODESYS and TwinCAT3, Quadratic velocity ramp calc we used Struckig Library.  
 
 There is suggest to read [keba servoone usermanual](https://support.keba.com/cds/online/#doc/01-SOCANOPETHCAT-bh-en/01-SOCANOPETHCAT-bh-en) to get more information about cia402.  
 Also i suggest that use Absolute Encoder, You don't need do reference travel at every start.  
@@ -69,7 +71,7 @@ SyncPosition_X(
 	xEnable:=TRUE , 
 	lrScale:=1.0 , 
 	xSimulation:=TRUE,
-	xError=> ;
+	xError=> );
 ```
 
 
