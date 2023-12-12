@@ -1,3 +1,4 @@
+(* https://github.com/feecat/opensml *)
 FUNCTION_BLOCK OpenSML_AxisController
 VAR_IN_OUT
 	Axis:OpenSML_Axis;
@@ -75,6 +76,7 @@ CASE iState OF
 			InterfaceType:=ControlInterfaceType.Velocity;
 			JogVel:=MAX(-Control.JogVelocity, -Control.MaxVelocity);
 		ELSE
+			InterfaceType:=ControlInterfaceType.Velocity;
 			JogVel:=0;
 		END_IF
 		
