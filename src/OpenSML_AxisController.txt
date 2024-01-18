@@ -65,7 +65,7 @@ CASE iState OF
 		Axis.Modes_of_operation:=8;//Cyclic Synchronous Position Mode
 		Axis.ControlWord.3:=Axis.Modes_of_operation_display=8;//Success change mode, enable operation
 		otg.CurrentPosition:=DINT_TO_LREAL(Axis.Position_Actual_Value) / Control.Scale;//Write actual position to otg
-		IF Axis.StatusWord.2 THEN//Operation Enabled
+		IF Axis.StatusWord.2 AND Axis.Modes_of_operation_display = 8 THEN//Operation Enabled, Mode Changed success
 			iState:=20;
 		END_IF
 	20://Movement
@@ -92,7 +92,7 @@ CASE iState OF
 			TargetPosition:= Control.lrFollowPosition , 
 			TargetVelocity:= JogVel , 
 			TargetAcceleration:= 0 , 
-			CycleTIme:=0.01,
+			CycleTIme:= Control.CycleTime,
 			MaxVelocity:= MoveVel,//Control.para.MaxVelocity , 
 			MaxAcceleration:= Control.MaxAcceleration , 
 			MaxJerk:= Control.MaxJerk);//accept new position and going on

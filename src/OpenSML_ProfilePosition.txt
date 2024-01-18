@@ -55,7 +55,7 @@ CASE iState OF
 	10://Set Mode
 		Axis.Modes_of_operation:=1;//Profile Position Mode
 		Axis.ControlWord.3:=Axis.Modes_of_operation_display=1;//Success change mode, enable operation
-		IF Axis.StatusWord.2 THEN//Operation Enabled
+		IF Axis.StatusWord.2 AND Axis.Modes_of_operation_display = 1 THEN//Operation Enabled, Mode Changed success
 			iState:=20;
 		END_IF
 	20://Movement
