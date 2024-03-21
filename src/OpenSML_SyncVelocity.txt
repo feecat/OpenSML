@@ -77,8 +77,12 @@ CASE iState OF
 			MaxVelocity:= MaxVelocity , 
 			MaxAcceleration:= MaxAcceleration , 
 			MaxJerk:= MaxJerk);//accept new velocity and going on
-			
-		Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
+
+		IF otg.NewPosition >= 0 THEN
+			Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
+		ELSE
+			Axis.Target_Position := - LREAL_TO_DINT( - otg.NewPosition * lrScale);//it fix negative overflow problem.
+		END_IF
 		
 		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = TrajectoryState.Error THEN//Axis Error
 			iState:=999;

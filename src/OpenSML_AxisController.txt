@@ -97,7 +97,11 @@ CASE iState OF
 			MaxAcceleration:= Control.MaxAcceleration , 
 			MaxJerk:= Control.MaxJerk);//accept new position and going on
 			
-		Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * Control.Scale);
+		IF otg.NewPosition >= 0 THEN
+			Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * Control.Scale);
+		ELSE
+			Axis.Target_Position := - LREAL_TO_DINT( - otg.NewPosition * Control.Scale);//it fix negative overflow problem.
+		END_IF
 		
 		Control.xInPosition := ABS(otg.NewPosition - Control.lrActualPosition) < 0.01;
 		
