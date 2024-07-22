@@ -44,7 +44,7 @@ CASE iState OF
 		xDone:=FALSE;
 		xBusy:=FALSE;
 		xError:=FALSE;
-		IF xEnable AND Axis.StatusWord.1 AND Axis.StatusWord.2 AND Axis.Modes_of_operation_display = 3 AND NOT Axis.StatusWord.3 THEN//ready
+		IF xEnable AND Axis.StatusWord.1 AND Axis.StatusWord.2 AND Axis.Modes_of_operation_display = 1 AND NOT Axis.StatusWord.3 THEN//ready
 			iState:=10;//go go
 		ELSIF xEnable AND Axis.StatusWord.1 AND Axis.Modes_of_operation_display <> 1 THEN//need switch mode
 			Axis.ControlWord.3:=FALSE;//drop down operation enabled
