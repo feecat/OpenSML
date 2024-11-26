@@ -119,8 +119,9 @@ Overflow will automatic sum at some servo driver. so driver can accept overflow.
 
 If you need a large move range, make sure not overflow. Also, Some servo driver cannot accept overflow.  
 
+## Limit
 
-
+There have an acknowledged problem in ruckig [#45](https://github.com/pantor/ruckig/issues/45) , [#17](https://github.com/pantor/ruckig/issues/17) . In this situation, put max velocity down while moving could make a unexpected move.
 
 
 
