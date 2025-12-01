@@ -17,22 +17,10 @@ VAR_OUTPUT
 	xError: BOOL;
 END_VAR
 VAR
-	otg : StruckigLight.Otg:= (
-		CycleTime := CycleTime,
-		MaxVelocity := MaxVelocity ,
-		MaxAcceleration := MaxAcceleration ,
-		MaxJerk := MaxJerk ,
-		CurrentPosition := 0.0 ,
-		CurrentVelocity := 0.0 ,
-		CurrentAcceleration := 0.0 ,
-		TargetPosition := 0.0 ,
-		TargetVelocity := 0.0 ,
-		TargetAcceleration := 0.0 
-	);
+	otg : FB_S7RTT_OTG;
 	iState:INT;
 	
 END_VAR
-
 
 
 (*
@@ -68,21 +56,21 @@ CASE iState OF
 		END_IF
 	20://Movement
 		otg(
-			ControlInterface:= ControlInterfaceType.Position , 
+			ControlInterface:= FALSE , 
 			TargetPosition:= TargetPosition , 
 			TargetVelocity:= 0 , 
-			TargetAcceleration:= 0 , 
+			CycleTime:= CycleTime,
 			MaxVelocity:= MaxVelocity , 
 			MaxAcceleration:= MaxAcceleration , 
 			MaxJerk:= MaxJerk);//accept new position and going on
-
+			
 		IF otg.NewPosition >= 0 THEN
 			Axis.Target_Position := LREAL_TO_DINT(otg.NewPosition * lrScale);
 		ELSE
 			Axis.Target_Position := - LREAL_TO_DINT( - otg.NewPosition * lrScale);//it fix negative overflow problem.
 		END_IF
 		
-		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = TrajectoryState.Error THEN//Axis Error
+		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.xError THEN//Axis Error
 			iState:=999;
 		ELSIF NOT xEnable THEN
 			iState:=0;

@@ -5,7 +5,7 @@ Open Sources SoftMotion Light For CiA402 Servo Drivers
 ![](/img/2.png)  
 
 Tips:  
-Library file should worked on CODESYS and TwinCAT3, Quadratic velocity ramp calc we used Struckig Library.  
+Library file should worked on CODESYS and TwinCAT3, Quadratic velocity ramp calc we used S7RTT Library.  
 
 There is suggest to read [keba servoone usermanual](https://support.keba.com/cds/online/#doc/01-SOCANOPETHCAT-bh-en/01-SOCANOPETHCAT-bh-en) to get more information about cia402.  
 Also i suggest that use Absolute Encoder, You don't need do reference travel at every start.  
@@ -94,18 +94,18 @@ SyncPosition_X(
 
 ## Velocity Ramp
 
-Quadratic velocity ramp calculate is very, very, very difficulty. Its simple when calc a curve, but its complexable when break a move without speed jitter.  
+Quadratic velocity ramp calculate is very difficulty. Its simple when calc a curve, but its complexable when break a move without speed jitter.  
 
 I had create a 6th velocity ramp base g2 at [https://github.com/feecat/OpenSML/issues/4#issuecomment-1146995447](https://github.com/feecat/OpenSML/issues/4#issuecomment-1146995447) , But it cannot break a move. This is unacceptable for most applications.  
 
-[Struckig](https://github.com/stefanbesler/struckig) and [Ruckig](https://github.com/pantor/ruckig) is for multi dof robot calc, Ruckig calculates a trajectory to a target waypoint (with position, velocity, and acceleration) starting from any initial state limited by velocity, acceleration, and jerk constraints. It already finish mostily job in CSP moveabsolute. Also..it have a little bug, when i use Struckig, sometime it get non-zero acceleration when finished, it wll cause exception move. I had remove some funcition, reduce program size and make it work with OpenSML. For now its still in test, If you found some bug please push your issues. Thanks.
+[Struckig](https://github.com/stefanbesler/struckig) and [Ruckig](https://github.com/pantor/ruckig) is a good choose, We had use it in v2.x. However, It have some problem when calc. So in V3.x we changed to S7RTT planner.
 
 At this trace,  
 1. `POU.otg.CurrentPosition` from struckig.
 2. `POU.Axis1.fSetPosition` from SM3_Basic.
 3. `POU.csp.otg.CurrentPosition` from OpenSML_SyncPosition.
 
-They overlap perfectly, diff < 1e-8.
+They overlap perfectly, diff < 1e-5.
 
 ![](/img/1.png)  
 
@@ -118,10 +118,5 @@ So, if we dont want overflow, The position range is `-10240 ~ 10239`mm.
 Overflow will automatic sum at some servo driver. so driver can accept overflow. But, if overflow happend, and OpenSML_SyncPosition FunctionBlock xEnable drop down, we cannot know how many overflow happend. When xEnable up, Actual position not equal OpenSML_SyncPosition feedback. It could make some exception move.  
 
 If you need a large move range, make sure not overflow. Also, Some servo driver cannot accept overflow.  
-
-## Limit
-
-There have an acknowledged problem in ruckig [#45](https://github.com/pantor/ruckig/issues/45) , [#17](https://github.com/pantor/ruckig/issues/17) . In this situation, put max velocity down while moving could make a unexpected move.
-
 
 

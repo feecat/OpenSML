@@ -8,11 +8,12 @@ VAR
 	Power:OpenSML_Power;
 	Home:OpenSML_Home;
 	iState:INT;
-	otg : Otg;
-	InterfaceType:ControlInterfaceType;
+	otg : FB_S7RTT_OTG;
+	InterfaceType:BOOL;
 	JogVel:LREAL;
 	MoveVel:LREAL;
 END_VAR
+
 
 
 
@@ -70,28 +71,27 @@ CASE iState OF
 		END_IF
 	20://Movement
 		IF Control.JogPos AND NOT Control.xFollowEnable THEN
-			InterfaceType:=ControlInterfaceType.Velocity;
+			InterfaceType:=1;
 			JogVel:=MIN(Control.JogVelocity, Control.MaxVelocity);
 		ELSIF Control.JogNeg AND NOT Control.xFollowEnable THEN
-			InterfaceType:=ControlInterfaceType.Velocity;
+			InterfaceType:=1;
 			JogVel:=MAX(-Control.JogVelocity, -Control.MaxVelocity);
 		ELSE
-			InterfaceType:=ControlInterfaceType.Velocity;
+			InterfaceType:=1;
 			JogVel:=0;
 		END_IF
 		
 		IF Control.xFollowEnable AND Control.lrFollowVelocity > 0 THEN
-			InterfaceType:=ControlInterfaceType.Position;
+			InterfaceType:=0;
 			MoveVel:=MIN(Control.lrFollowVelocity, Control.MaxVelocity);
 		ELSE
 			MoveVel:= Control.MaxVelocity;
 		END_IF
 		
 		otg(
-			ControlInterface:= InterfaceType,//ControlInterfaceType.Position , 
+			ControlInterface:= InterfaceType,
 			TargetPosition:= Control.lrFollowPosition , 
 			TargetVelocity:= JogVel , 
-			TargetAcceleration:= 0 , 
 			CycleTIme:= Control.CycleTime,
 			MaxVelocity:= MoveVel,//Control.para.MaxVelocity , 
 			MaxAcceleration:= Control.MaxAcceleration , 
@@ -105,7 +105,7 @@ CASE iState OF
 		
 		Control.xInPosition := ABS(otg.NewPosition - Control.lrActualPosition) < 0.01;
 		
-		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.State = TrajectoryState.Error OR Power.xError OR Home.xError THEN//Axis Error
+		IF Axis.StatusWord.13 OR Axis.StatusWord.3 OR otg.xError OR Power.xError OR Home.xError THEN//Axis Error
 			iState:=999;
 		ELSIF NOT Control.xMoveEnable THEN
 			iState:=0;
@@ -123,7 +123,3 @@ END_CASE
 
 
 
-
-	
-	
-	
